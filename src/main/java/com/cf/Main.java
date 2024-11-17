@@ -1,5 +1,6 @@
 package com.cf;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -23,12 +24,7 @@ public class Main {
             }
 
             // Execute command
-            try {
-                HandleCommand.execute(input);
-            } catch (TaskException e) {
-                System.err.println(e.getMessage());
-            }
-
+            HandleCommand.execute(input);
         }
     }
 }

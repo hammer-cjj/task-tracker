@@ -23,28 +23,12 @@ public class TaskJSONFileUtil {
     private static final Path path = Path.of(FILENAME);
 
     /**
-     * Write to a json file(Add a new Task)
+     * Write to a json file
      * @param dataEntity
-     * @param task
      * @throws IOException
      */
-    public static void writeToJSONFile(DataEntity dataEntity, Task task) throws IOException {;
-
-        if (dataEntity == null) { // Add first
-            task.setId(1L);
-            dataEntity = new DataEntity();
-            dataEntity.setMaxId(1L);
-            dataEntity.getTasks().add(task);
-        } else {
-            // Get max id at current time
-            Long maxId = dataEntity.getMaxId();
-            task.setId(maxId + 1);
-            List<Task> tasks = dataEntity.getTasks();
-            tasks.add(task);
-            dataEntity.setMaxId(maxId + 1);
-        }
+    public static void writeToJSONFile(DataEntity dataEntity) throws IOException {;
         Files.writeString(path , dataEntity.toString(), StandardCharsets.UTF_8);
-        System.out.println("Task added successfully (ID: " + task.getId() +")");
     }
 
     /**
