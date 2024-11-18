@@ -1,10 +1,12 @@
 
-# Task tracker 
+# Task tracker
 
 The Task Tracker is a straightforward Command Line Interface (CLI) designed to help you track and manage your tasks 
 efficiently. This application takes user actions and inputs as arguments, storing the tasks in a JSON file. It leverages
 Java's built-in file system module to read from and write to the JSON file, ensuring that no external libraries or 
 frameworks are required for the project.
+
+For more detailed information , you can visit the [Task Tracker Project](https://roadmap.sh/projects/task-tracker).
 
 ## Example
 
