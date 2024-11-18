@@ -32,16 +32,18 @@ public class HandleCommand {
                 listCommand("todo");
             } else if ("task-cli list in-progress".equals(input)) { // Listing in-progress tasks
                 listCommand("in-progress");
-            } else if (input.startsWith("task-cli update")) {
+            } else if (input.startsWith("task-cli update")) { // Update task
                 String args = input.replace("task-cli update", "");
                 updateCommand(args);
-            } else if (input.startsWith("task-cli delete")) {
+            } else if (input.startsWith("task-cli delete")) { // Delete task
                 String arg = input.replace("task-cli delete", "").trim();
                 deleteCommand(arg);
-            } else if ("task-cli mark-in-progress".equals(input)) {
-                // todo
-            } else if ("task-cli mark-done".equals(input)) {
-                // todo
+            } else if (input.startsWith("task-cli mark-in-progress")) { // Marking a task as in progress
+                String arg = input.replace("task-cli mark-in-progress", "").trim();
+                markCommand("in-progress", arg);
+            } else if (input.startsWith("task-cli mark-done")) { // Marking a task as done
+                String arg = input.replace("task-cli mark-done", "").trim();
+                markCommand("done", arg);
             } else {
                 System.err.println("Usage: task-cli <command> <arguments>");
                 System.err.println("Please enter q to quit.");
@@ -201,6 +203,35 @@ public class HandleCommand {
 
         } catch (NumberFormatException e) {
             throw new TaskException("Error: invalid argument task-cli delete");
+        }
+    }
+
+    // About mark command
+    private static void markCommand(String statusMsg, String arg) throws IOException {
+        try {
+            Long taskId = Long.parseLong(arg);
+
+            DataEntity dataEntity = TaskJSONFileUtil.readFromJSONFile();
+
+            if (dataEntity == null || dataEntity.getTasks().isEmpty()) {
+                throw new TaskException("Task is not exist");
+            }
+
+            List<Task> tasks = dataEntity.getTasks();
+            // Get the task, otherwise throw a TaskException
+            Task task = tasks
+                    .stream()
+                    .filter(item -> item.getId().equals(taskId))
+                    .findFirst()
+                    .orElseThrow(
+                            () -> new TaskException("Task id " + taskId + " not found"));
+
+            // Marking status
+            task.setStatus(TaskStatus.getTaskStatus(statusMsg));
+            TaskJSONFileUtil.writeToJSONFile(dataEntity);
+
+        } catch (NumberFormatException e) {
+            throw new TaskException("Error: invalid argument task-cli mark-" + statusMsg);
         }
     }
 }
