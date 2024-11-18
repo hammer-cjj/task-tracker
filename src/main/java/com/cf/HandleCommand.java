@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Copyright(C) 2024- com.cf
@@ -34,6 +35,13 @@ public class HandleCommand {
             } else if (input.startsWith("task-cli update")) {
                 String args = input.replace("task-cli update", "");
                 updateCommand(args);
+            } else if (input.startsWith("task-cli delete")) {
+                String arg = input.replace("task-cli delete", "").trim();
+                deleteCommand(arg);
+            } else if ("task-cli mark-in-progress".equals(input)) {
+                // todo
+            } else if ("task-cli mark-done".equals(input)) {
+                // todo
             } else {
                 System.err.println("Usage: task-cli <command> <arguments>");
                 System.err.println("Please enter q to quit.");
@@ -162,6 +170,37 @@ public class HandleCommand {
             }
         } catch (NumberFormatException e) {
             throw new TaskException("Error: task id must be a number");
+        }
+    }
+
+    // About delete command
+    private static void deleteCommand(String arg) throws IOException {
+        try {
+            Long taskId = Long.parseLong(arg);
+
+            DataEntity dataEntity = TaskJSONFileUtil.readFromJSONFile();
+
+            if (dataEntity == null || dataEntity.getTasks().isEmpty()) {
+                throw new TaskException("Task is not exist");
+            }
+
+            List<Task> tasks = dataEntity.getTasks();
+            // Get the task, otherwise throw a TaskException
+            Task task = tasks
+                    .stream()
+                    .filter(item -> item.getId().equals(taskId))
+                    .findFirst()
+                    .orElseThrow(
+                            () -> new TaskException("Task id " + taskId + " not found"));
+
+            // Remove task
+            List<Task> collect = tasks.stream().filter(item -> !item.getId().equals(taskId)).toList();
+
+            dataEntity.setTasks(collect);
+            TaskJSONFileUtil.writeToJSONFile(dataEntity);
+
+        } catch (NumberFormatException e) {
+            throw new TaskException("Error: invalid argument task-cli delete");
         }
     }
 }
